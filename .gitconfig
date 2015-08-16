@@ -1,0 +1,7 @@
+[user]
+	name = nwmsocal702
+	email = nwmsocal702@gmail.com
+[core]
+	editor = vim
+[push]
+	default = simple

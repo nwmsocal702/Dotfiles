@@ -1,0 +1,63 @@
+set imap_user = 'nikolasmatich@gmail.com'
+set imap_pass = "`gpg --use-agent --quiet --batch -d ~/.nikolasmatich@gmail.gpg`"
+set from = 'nikolasmatich@gmail.com'
+set realname = 'Nikolas Matich'
+
+# REMOTE GMAIL FOLDERS
+set folder = 'imaps://imap.gmail.com:993'
+set spoolfile = '+INBOX'
+set postponed ='+[Google Mail]/Drafts'
+set trash = '+[Google Mail]/Trash'
+#set any_label = '+[Google Mail]/any_label'
+#SMTP SETTINGS
+set smtp_url = 'smtp://nikolasmatich@smtp.gmail.com:587/'
+set smtp_pass = "`gpg --use-agent --quiet --batch -d ~/.nikolasmatich@gmail.gpg`"
+
+
+# LOCAL FOLDERS FOR CACHED HEADERS AND CERTIFICATES
+set header_cache =~/.mutt/cache/headers
+set message_cachedir =~/.mutt/cache/bodies
+set certificate_file =~/.mutt/certificates
+
+#Mail check and timeout variables
+set mail_check=90
+set timeout=15
+
+#SECURING Mutt Session
+set move = no  #Stop asking to move read messages to mbox!
+set imap_keepalive = 900
+
+#SET EDITOR
+set editor='vim'
+
+#Gmail-style keyboard shortcuts
+macro index gs "<change-folder>=Sent<enter>" "Go to all mail"
+macro index gd "<change-folder>=[Gmail]/Drafts<enter>" "Go to drafts"
+macro index gi "<change-folder>=INBOX<enter>" "Go to inbox"
+macro index gt "<change-folder>=[Gmail]/Trash<enter>" "Go to trash"
+macro index gss "<change-folder>=[Gmail]/Important<enter>" "Go to Important folder"
+macro index,pager d "<save-message>=[Gmail]/Trash<enter><enter>" "Trash"
+macro index,pager y "<save-message>=[Gmail]/Important<enter><enter>" "Archive"
+macro generic,pager <F2> "<shell-escape> vim ~/.mutt/mutt_manual.txt<enter>" "Show Mutt documentation"
+#macro generic,pager <F2> "<shell-escape> zcat /usr/share/doc/mutt/manual.txt.gz | sensible-pager<enter>" "Show Mutt documentation"
+
+#GNUPG Setting in different file
+source ~/.mutt/gpg.rc  
+#Color settings
+source ~/.mutt/colors.angdraug
+#Source Mailcap
+#source ~/.mailcap
+
+#Use mime.types to look up handlers for application/octet-stream. Can be undone with unmime_lookup.
+#mime_lookup application/octet-stream
+
+#Upgrade the progress counter every 250ms, good for mutt over SSH
+#See http://bugs.debian.org/537746
+set time_inc=250
+
+#AUTO VIEW
+#auto_view text/html
+#auto_view application/x-pgp-message
+#auto_view image/*
+#auto_view application/pdf
+#auto_view application/octet-stream

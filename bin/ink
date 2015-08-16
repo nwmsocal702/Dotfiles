@@ -1,0 +1,80 @@
+#!/bin/bash
+#Find and print ink levels for Epson WF-3520 Printer from web page
+#http://192.168.3.101/PRESENTATION/HTML/TOP/PRTINFO.HTML
+
+#Variables
+PROGNAME=$(basename "$0")
+webpage=http://192.168.3.106/PRESENTATION/HTML/TOP/PRTINFO.HTML
+tmpfile=$(mktemp)
+tmpfile1=$(mktemp)
+wget -q -O "$tmpfile" $webpage
+status=$?
+getinfo=$(awk 'BEGIN {min=55;max=59;} { if (NR>=min)
+       	{ if (NR<=max) print "$0" } }' "$tmpfile")
+getstatus=$(echo "$getinfo" | grep "<span>.*</span>" | \
+       	sed 's/<span>//g; s/<\/span>//g; s/<\/p>//g')
+
+function error_exit () 
+{
+        echo "${PROGNAME}: line $LINENO ${1:-"Unknown Error"}" 1>&2
+	exit 1
+}
+
+#Check printer status
+if [ "$status" -ne 0 ]
+then
+	error_exit "Printer not responding"
+fi
+
+#Check positional parameters and see if there is optional argument
+if [ $# -ne 0 ] 
+then
+	if [[ "$@" =~ ^[-]{2}info$ || "$@" =~ ^[-]{1}[i]{1}$ ]]
+	then
+        getpageinfo=$(awk 'BEGIN {min=91;max=115} { if (NR>=min)
+       	{ if (NR<=max) print $0 } }' "$tmpfile")
+        echo "$getpageinfo" | grep "<tr class=\"item" > "$tmpfile1"
+
+        while read line
+        do
+	data1=$(echo "$line" | cut -d'>' -f4 | sed 's/<\/bdi//g')
+	data2=$(echo "$line" | cut -d'>' -f7 | sed 's/<\/td//g')
+	echo "${data1}: ${data2}"
+        done < "$tmpfile1"
+        rm "$tmpfile" && rm "$tmpfile1"
+        exit 0
+        else
+	error_exit "Incorrect Arguments"
+        fi
+fi
+
+#Find ink levels in data
+getb=$(grep "<img class='color' src='../../IMAGE/Ink_K.PNG' height="     \
+       	"$tmpfile" | grep -oE "height='[0-9]{2}'" | tr -dc 0-9) 
+getm=$(grep "<img class='color' src='../../IMAGE/Ink_M.PNG' height="     \
+       	"$tmpfile" | grep -oE "height='[0-9]{2}'" | tr -dc 0-9) 
+gety=$(grep "<img class='color' src='../../IMAGE/Ink_Y.PNG' height="     \
+       	"$tmpfile" | grep -oE "height='[0-9]{2}'" | tr -dc 0-9)
+getc=$(grep "<img class='color' src='../../IMAGE/Ink_C.PNG' height="     \
+       	"$tmpfile" | grep -oE "height='[0-9]{2}'" | tr -dc 0-9)
+getw=$(grep "<img class='color' src='../../IMAGE/Ink_Waste.PNG' height=" \
+       	"$tmpfile" | grep -oE "height='[0-9]{2}'" | tr -dc 0-9)
+
+declare -a colors=("$getb" "$getm" "$gety" "$getc" "$getw");
+
+for percent in "${colors[@]}"
+do
+	pvalue=$((percent * 2))
+	percentages=("${percentages[@]}" "$pvalue")
+done
+
+#Print ink levels
+echo "#################### WF-3520 Series STATUS ####################"
+echo -e "\e[5m${getstatus}\e[25m"
+echo "######################### INK LEVELS ##########################"
+echo -e "\e[40mBLACK\t\e[45mMAGENTA\t\e[43mYELLOW\t\e[46mCYAN\t\e[100mWASTE\t\e[49m"
+echo -e "${percentages[0]}%\t${percentages[1]}%\t${percentages[2]}%\t" \
+        "${percentages[3]}%\t${percentages[4]}%"
+
+rm "$tmpfile" && rm "$tmpfile1"
+exit 0

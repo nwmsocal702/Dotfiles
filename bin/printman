@@ -1,0 +1,39 @@
+#!/bin/bash
+
+: ${mandir:=/usr/share/man/man1}
+manfile=${mandir}/${1}.1.gz
+
+function error() {
+	echo "$1" 1>&2
+	exit 1
+}
+   
+
+printercheck1=$(lpstat -p)
+grepp=$(echo $printercheck1 | egrep -oi "idle|enabled"); status=$?
+grep1=$(echo $grepp | cut -d' ' -f1)
+grep2=$(echo $grepp | cut -d' ' -f2)
+
+#Check arguments
+if (( $# != 1 ))
+then
+echo "Error: Usage $(basename $0) manpage"
+exit 1
+fi
+
+# Check printer make sure it is enabled and accepting jobs
+# Check line 25 not sure if $grep1 or $grep2 = idle/enabled
+if [[ "$grep1" == "idle" && "$grep2" == "enabled" && "$status" -eq 0 ]]; then
+    if [ -s "${manfile}" ]; then
+    zcat "${manfile}" | groff -man -Tps | lp ||
+	    { error "Error: Could not print!"; }
+    else
+        error "Error: File ${manfile} does not exist!"
+	fi
+elif [[ "$grep1" != "idle" && "$grep2" != "enabled" && "$status" -eq 0 ]]; then
+	error "Error: Printer responding but not enabled!"
+else
+	error "Error: Printer is not enabled!"
+fi
+
+exit 0

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+trap '' 1 2 3 18
+stty -echo
+key_2='bd1446e2acedf9792d5fd9660624228ed1b98990a23cba6e8d91215b8b5fdc17'
+key_3=
+   tput clear
+   until [ "$key" = "$key_2" ]
+   do
+         read -r key_3
+	 key=$(echo "$key_3" | sha256sum | cut -d' ' -f1)
+   done
+stty echo
+
