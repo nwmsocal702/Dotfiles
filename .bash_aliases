@@ -14,7 +14,7 @@ alias stop='killall -iw -9'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -I'
-
+alias tmux='tmux -2'
 
 ########### Functions ###########
 

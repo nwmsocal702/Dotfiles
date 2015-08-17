@@ -1,8 +1,35 @@
-"-----------------Pathogen----------------
-execute pathogen#infect()
-syntax on
-filetype plugin indent on
-"-----------------------------------------
+"----------------Vundle-----------------
+set nocompatible         " be improved, required
+filetype off             " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'scrooloose/syntastic'
+
+Plugin 'scrooloose/nerdtree'
+
+Plugin 'altercation/vim-colors-solarized'
+
+" Development version available at WolfgangMehner/vim-plugins
+Plugin 'vim-scripts/bash-support.vim'
+
+Plugin 'oplatek/Conque-Shell'
+
+Plugin 'bling/vim-airline'
+
+Plugin 'Valloric/YouCompleteMe'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
 
 " Uncomment the following to have Vim jump to the last position when
 " reopening a file
@@ -33,14 +60,30 @@ set statusline=%f         " Path to the file
 set statusline+=\ -\      " Separator
 set statusline+=FileType: " Label
 set statusline+=%y        " Filetype of the file
-set t_Co=16               " Use the 16 colors terminal option
+"set t_Co=16              " Use the 16 colors terminal option
+set t_Co=256              " Use 256 colors looks better than 16
 set buftype: ""
 set hlsearch incsearch    " Highlight search matches
+set showmode              " Display current mode
+set tabpagemax=15         " Only show 15 tabs
 set cursorline            " Highlight current line
 set wildmenu              " Visual autocomplete for menu
+set wildmode=list:longest,full  " Command Tab completion
 set lazyredraw            " redraw only when we need to
+set showcmd               " Show partial commands
+
+"--Formatting
+set autoindent            " Indent at same level of previous line
+set shiftwidth=4          " Use indents of 4 spaces
+set expandtab             " Tabs are spaces, not tabs
+set tabstop=4             " An indentation every four columns
+set softtabstop=4         " Let backspace delete indent
+set nojoinspaces          " Prevents inserting 2 spaces after punc on a join
+set splitright            " Puts new vsplit windows to the right of current
+set splitbelow            " Puts new split windows to the bottom of current
 
 execute "set colorcolumn=" . join(range(80,335), ',')
+
 
 " Autoreload vimrc file on save
 augroup reload_vimrc " {
@@ -70,6 +113,7 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
+let g:is_bash=1
 let g:syntastic_always_populate_loc_list = 0 "location list not filled auto
 let g:syntastic_auto_loc_list = 1            "auto open location list
 let g:syntastic_check_on_open = 0            "Check on open
@@ -77,13 +121,20 @@ let g:syntastic_loc_list_height = 5          "Height of location list
 let g:syntastic_check_on_wq = 0              "check on quitting
 let g:syntastic_aggregate_errors = 1         "run all checkers and show err
 let g:syntastic_id_checkers = 1              "label errors with checker name
-let g:syntastic_sh_checkers = ["sh", "shellcheck", "checkbashisms"]
+let g:syntastic_sh_checkers = ["sh", "shellcheck", "checkbashisms", "bashate"]
 let g:syntastic_shell = "/bin/bash"
+let g:syntastic_enable_highlighting = 0      " Use highlighting to mark errors
+let g:syntastic_enable_balloons = 1          " Display error msgs in baloons
+let g:syntastic_enable_highlighting = 1      " Highlight errors
+let g:ycm_show_diagnostics_ui = 0
+"Control what the statusline contains 
+let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 
 let g:syntastic_mode_map = {
     \ "mode": "active",
     \ "active_filetypes": ["php", "python", "sh", "perl", "bash", "html"],
     \ "passive_filetypes": ["txt"] }
+
 "------------------NERDTree--------------------
 " autocmd StdinReadPre * let s:std_in=1
 " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
@@ -93,6 +144,8 @@ nnoremap <S-F9> :!%:p<Enter>
 
 nnoremap <leader>ev :tabnew $MYVIMRC<CR>       " Opens vimrc for editing
 nnoremap <leader>sv :source $MYVIMRC<CR>       " Sources vimrc
+nnoremap <leader>eb :tabnew ~/.bashrc<CR>      " Opens bashrc for editing
+nnoremap <leader>ez :tabnew ~/.zshrc<CR>       " Opens zshrc for editing
 nnoremap <leader>nwm :e scp://matich.org//<CR>:set buftype: ""<CR>
 
 	 
