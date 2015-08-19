@@ -15,6 +15,8 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -I'
 alias tmux='tmux -2'
+alias ev='vim ~/.vim/vimrc'
+alias eb='vim ~/.bashrc'
 
 ########### Functions ###########
 
